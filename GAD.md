@@ -1,4 +1,4 @@
-# Kuro Rules — Copilot Instructions
+# Kuro Rules — AI Guidelines
 
 Shared AI rules for all projects. **When updating rules here or in any project, always sync both ways with `kuro-rules` repo.**
 
@@ -99,37 +99,8 @@ Every project must be secure by default.
 ---
 
 ## Formula Clarity — NO LATEX
-- **Constraint**: Do NOT use `$` LaTeX notation in chat (it doesn't render visually for the user).
+- **Constraint**: Do not use `$` LaTeX notation in chat (it doesn't render visually for the user).
 - **Rule**: Use plain text, ASCII art, or clear descriptive names for math (e.g., "Moyenne / Mean (mu)" instead of mu).
-
----
-
-## Project Progress Tracking — MANDATORY
-Every project MUST track its completion percentage in SESSION_SUMMARY.md.
-
-- **Progress Score**: Include a `**Progress**: X%` line at the end of each SESSION_SUMMARY.md entry.
-- **Scoring Methodology**: Be **REALISTIC and PESSIMISTIC**. If you think a project is 50% done, score it 30%.
-- **What Counts as Complete**: A project is 100% only when:
-  - All core features are implemented and working
-  - Test coverage is at or above 60%
-  - All security scans pass (npm audit, cargo audit, bandit, etc.)
-  - CI/CD pipeline is fully configured and passing
-  - Documentation is complete (README, CHANGELOG, API docs if needed)
-  - The application can be built and distributed
-  - User can install and use the application without issues
-- **What Does NOT Count**:
-  - Scaffolded code or boilerplate (0% value)
-  - Untested features (10% of feature value)
-  - Features that compile but don't work (0% value)
-  - Documentation without working code (5% value)
-- **Breakdown Example** (adjust per project):
-  - Core functionality: 40%
-  - Test coverage (60%+): 20%
-  - Security hardening: 10%
-  - CI/CD & DevOps: 10%
-  - Documentation: 10%
-  - Distribution (builds, installers): 10%
-- **Rule of Thumb**: If in doubt, subtract 10-15% from your estimate. Optimism is the enemy of accurate tracking.
 
 ---
 
@@ -169,7 +140,6 @@ Every AI session MUST produce a traceable record of what was done. This ensures 
 
 **Tests**: X passing
 **Blockers**: (If any)
-**Progress**: X% (pessimistic estimate)
 ```
 
 ---
@@ -189,6 +159,16 @@ Every AI session MUST produce a traceable record of what was done. This ensures 
 - **Update README & Changelog**: Always update README.md and CHANGELOG.md after significant changes.
 - **Zero Friction**: Always ensure zero friction for users when using tools. Clear documentation, simple setup, intuitive UX.
 - **Solve Real Pain Points**: Always ensure what we are building solves real pain points. Build for users, not for the sake of building.
+
+---
+
+## Agent Protocol
+To ensure strict adherence to rules:
+1.  **Read This First**: Agents MUST read this file at the start of every session.
+2.  **Checklist Enforcement**: Agents MUST verify `task.md` and run `bandit` before declaring a task complete.
+3.  **Explicit Confirmation**: When users ask "did you follow the rules?", Agents MUST provide proof (e.g., bandit output).
+4.  **No Silent Failures**: If a step fails (e.g., artifact update), the Agent MUST report it and retry, never ignore it.
+5.  **Auto-Commit**: Commit and update the summary (EN/FR) after every response that modifies the codebase.
 
 ---
 
@@ -263,13 +243,3 @@ Before transitioning to the next phase, the user MUST demonstrate deep understan
 5. "What did you learn that surprised you?"
 
 **Enforcement**: STOP and provide deep explanation before phase transition.
-
----
-
-## Agent Protocol
-To ensure strict adherence to rules:
-1.  **Read This First**: Agents MUST read this file at the start of every session.
-2.  **Checklist Enforcement**: Agents MUST verify `task.md` and run `bandit` before declaring a task complete.
-3.  **Explicit Confirmation**: When users ask "did you follow the rules?", Agents MUST provide proof (e.g., bandit output).
-4.  **No Silent Failures**: If a step fails (e.g., artifact update), the Agent MUST report it and retry, never ignore it.
-5.  **Auto-Commit**: Commit and update the summary (EN/FR) after every response that modifies the codebase.

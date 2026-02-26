@@ -192,6 +192,80 @@ Every AI session MUST produce a traceable record of what was done. This ensures 
 
 ---
 
+## Mom Test — First 10% Rule (MANDATORY)
+
+**Principe**: Ne pas ecrire une seule ligne de code de production avant d'avoir valide que le probleme existe et est douloureux.
+
+### Regle absolue
+- **Progress 0-10%**: Mom Test uniquement. Pas de code, pas d'architecture.
+- **Gate**: Le passage a 10%+ necessite une validation explicite du probleme.
+- **Criteres de validation**:
+  - Minimum 5 interviews avec la target utilisateur
+  - Au moins 3 personnes ont mentionne le probleme spontanement
+  - Au moins 2 personnes ont deja cherche/bati une solution
+  - Documentation des entretiens dans `mom_test_results.md`
+
+### Les 3 regles du Mom Test
+1. **Ne pas parler de l'idee** — Parler du probleme uniquement
+2. **Passe, pas futur** — Demander ce qui s'est passe, pas ce qui se passerait
+3. **Ecouter > Parler** — 25% parler, 75% ecouter
+
+### Questions obligatoires
+- "Racontez-moi la derniere fois que [probleme] vous est arrive."
+- "Combien de temps avez-vous passe a le resoudre?"
+- "Qu'avez-vous fait pour le resoudre?"
+- "Avez-vous deja cherche/build une solution?"
+
+### Signaux positifs (Continue)
+- "J'ai passe X jours a..." — Temps perdu = douleur reelle
+- "J'ai fait un script custom..." — Solution bricolee = besoin non satisfait
+- "J'ai abandonne le projet..." — Impact critique = urgence
+
+### Signaux negatifs (Pivot ou Stop)
+- "Ca m'arrive rarement" — Pas assez frequent
+- "TensorBoard me suffit" — Pas assez douloureux
+- "Cool projet!" sans histoire — Politesse, pas validation
+
+### Livrables du Mom Test
+- [ ] `mom_test_script.md` — Questions d'entretien (EN/FR)
+- [ ] `mom_test_results.md` — Comptes-rendus des interviews (EN/FR)
+- [ ] `decision.md` — Go/No-Go/Pivot avec justification (EN/FR)
+
+### Integration Progress Tracking
+Le Mom Test represente **les premiers 10%** du progress. Un projet ne peut pas depasser 10% sans:
+- `mom_test_results.md` complete
+- Decision documentee dans `decision.md`
+
+### AI Guidance During Mom Test (MANDATORY)
+Pendant la periode Mom Test (0-10%), l'agent DOIT:
+1. **Guider pas a pas**: Expliquer chaque etape clairement et patiemment.
+2. **Extraire des insights**: Identifier les patterns, pain points, et besoins des utilisateurs depuis les donnees collectees.
+3. **Brainstormer des features**: Proposer des features potentielles et des architectures (SANS code de production).
+4. **Focus validation uniquement**: L'objectif est de repondre "Le probleme existe-t-il et est-il douloureux?" - rien d'autre.
+5. **Proteger le fichier mom_test_results.md**: Ce fichier est dans .gitignore car il contient des donnees d'interview privees.
+6. **Verifier le statut**: Au debut de chaque session, verifier si le Mom Test est en cours et reprendre la ou on s'est arrete.
+
+### Ce qui est AUTORISE pendant Mom Test
+- Extraire des features potentielles des donnees collectees
+- Brainstormer des architectures et solutions
+- Documenter les idees dans des fichiers dedies (ex: `ideas.md`, `architecture_notes.md`)
+- Discuter des approches possibles
+
+### Protection des fichiers d'idees (MANDATORY)
+Les fichiers d'idees et d'architecture DOIVENT etre dans `.gitignore`:
+- `mom_test_results.md` — donnees d'interview privees
+- `ideas.md` — brainstorms work-in-progress
+- `architecture_notes.md` — notes d'architecture
+
+**Raison**: Ces fichiers contiennent des reflexions en cours, des donnees privees, et ne doivent pas etre exposes publiquement.
+
+### Ce qui est INTERDIT pendant Mom Test
+- NE PAS ecrire du code de production
+- NE PAS implementer les features proposees
+- NE PAS supposer que le probleme est valide avant d'avoir 5 interviews
+
+---
+
 ## Agent Protocol
 To ensure strict adherence to rules:
 1.  **Read This First**: Agents MUST read this file at the start of every session.
@@ -199,3 +273,77 @@ To ensure strict adherence to rules:
 3.  **Explicit Confirmation**: When users ask "did you follow the rules?", Agents MUST provide proof (e.g., bandit output).
 4.  **No Silent Failures**: If a step fails (e.g., artifact update), the Agent MUST report it and retry, never ignore it.
 5.  **Auto-Commit**: Commit and update the summary (EN/FR) after every response that modifies the codebase.
+
+---
+
+## Periodic Validation (MANDATORY)
+
+At progress milestones (25%, 50%, 75%, 90%, 95%), the product MUST be validated:
+
+| Milestone | Required Validation |
+|-----------|-------------------|
+| 25% | Mom Test follow-up (3+ users), Marketing Test (landing page views) |
+| 50% | Mom Test validation (5+ new users), Marketing Test (conversion metrics) |
+| 75% | Mom Test expansion (different segments), Marketing Test (pricing) |
+| 90% | Final Mom Test, Marketing Test (launch readiness) |
+| 95% | Pre-launch validation (all criteria met) |
+
+**Enforcement**: STOP development at each milestone until validation is complete.
+
+---
+
+## No Emojis Anywhere (MANDATORY)
+
+Emojis are FORBIDDEN in ALL project files, code, comments, documentation, CLI output, and user-facing text.
+
+**Reason**: Encoding issues, tool compatibility, professionalism.
+
+**Enforcement**: REMOVE immediately if found.
+
+---
+
+## Rule Synchronization (MANDATORY)
+
+When ANY rule file is updated, ALL rule files MUST be updated:
+- AGENTS.md
+- AI_GUIDELINES.md
+- .cursorrules
+- copilot-instructions.md
+- GAD.md
+
+**Enforcement**: SYNC immediately to all files, document in SYNC_LOG.md.
+
+---
+
+## Working Demos (MANDATORY)
+
+At each validation milestone (25%, 50%, 75%, 90%, 95%), the project MUST have at least **2 working demos**.
+
+**Requirements**:
+- Minimum 2 demos per milestone
+- Each demo must be runnable without errors
+- Demos must demonstrate different aspects of the product
+
+**Enforcement**: STOP and create 2 working demos if missing.
+
+---
+
+## Deep Understanding Before Phase Transition (MANDATORY)
+
+Before transitioning to the next phase, the user MUST demonstrate deep understanding of what was created.
+
+**Requirements**:
+1. Explain the mechanism: How does it work under the hood?
+2. 2nd order consequences: What happens in production? What edge cases?
+3. 3rd order consequences: What long-term effects? What dependencies?
+4. Teach something new: Agent must teach user at least one new concept
+5. Critical thinking prompts: Agent must ask probing questions
+
+**Critical Thinking Questions (Agent MUST Ask)**:
+1. "What could break this in production that we haven't tested?"
+2. "What would happen if 10x more users used this?"
+3. "What assumptions are we making that might be wrong?"
+4. "What would you do if this completely failed?"
+5. "What did you learn that surprised you?"
+
+**Enforcement**: STOP and provide deep explanation before phase transition.
