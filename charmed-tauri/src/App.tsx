@@ -27,6 +27,14 @@ interface SpotifyPlaylist {
   owner: string;
 }
 
+interface AppConfig {
+  spotify_client_id: string | null;
+  spotify_client_secret: string | null;
+  spotify_redirect_uri: string;
+  default_volume: number;
+  default_fade_in_duration: number;
+}
+
 export default function App() {
   const [time, setTime] = useState("00:00:00");
   const [alarmTime, setAlarmTime] = useState("08:00");
@@ -48,8 +56,20 @@ export default function App() {
   // Charger les données au démarrage
   useEffect(() => {
     refreshAlarms();
+    loadConfig();
     checkSpotifyAuth();
   }, []);
+
+  const loadConfig = async () => {
+    try {
+      const config = await invoke<AppConfig>("get_config");
+      if (config && config.spotify_client_id) {
+        setClientIdInput(config.spotify_client_id);
+      }
+    } catch (e) {
+      console.error("Erreur chargement config:", e);
+    }
+  };
 
   // Vérifier l'authentification Spotify
   const checkSpotifyAuth = async () => {
@@ -99,13 +119,27 @@ export default function App() {
           if (lastTriggeredRef.current !== key) {
             lastTriggeredRef.current = key;
             setTriggeredAlarm(triggered);
+
             try {
+              if (triggered.playlist_uri && triggered.playlist_uri !== "local") {
+                // Tenter lecture Spotify
+                await invoke("play_spotify_playlist", { playlistUri: triggered.playlist_uri });
+                // Optionnel: régler le volume
+                await invoke("set_spotify_volume", { volume: triggered.volume });
+              } else {
+                // Fallback local
+                await invoke("play_local_alarm");
+              }
+            } catch (e) {
+              console.error("Erreur déclenchement alarme:", e);
+              // Fallback de sécurité
               await invoke("play_local_alarm");
-            } catch {}
+            }
+
             setTimeout(() => setTriggeredAlarm(null), 30000);
           }
         }
-      } catch {}
+      } catch { }
     }, 1000);
     return () => clearInterval(checker);
   }, []);
@@ -114,8 +148,10 @@ export default function App() {
   const refreshAlarms = useCallback(async () => {
     try {
       const list = await invoke<AlarmEntry[]>("get_alarms");
-      setAlarms(list);
-    } catch {}
+      if (Array.isArray(list)) {
+        setAlarms(list);
+      }
+    } catch { }
   }, []);
 
   // Créer une alarme
@@ -161,7 +197,7 @@ export default function App() {
   const handleStopAlarm = async () => {
     try {
       await invoke("stop_local_alarm");
-    } catch {}
+    } catch { }
     setTriggeredAlarm(null);
   };
 
@@ -173,7 +209,7 @@ export default function App() {
   // Étape 2: Lancer OAuth avec le Client ID
   const handleStartOAuth = async () => {
     if (!clientIdInput.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const authUrl = await invoke<string>("spotify_login", {
@@ -196,7 +232,7 @@ export default function App() {
   // Valider le code OAuth
   const handleCallback = async () => {
     if (!callbackCode.trim()) return;
-    
+
     setIsLoading(true);
     try {
       let code = callbackCode;
@@ -218,7 +254,7 @@ export default function App() {
     }
   };
 
-  const hasActiveAlarm = alarms.some((a) => a.active);
+  const hasActiveAlarm = Array.isArray(alarms) && alarms.some((a) => a.active);
 
   return (
     <div className="min-h-screen w-full gradient-bg flex items-center justify-center p-4">
@@ -260,14 +296,14 @@ export default function App() {
               <p className="text-white/40">Spotify Alarm Clock</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
             {/* Status */}
             <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${hasActiveAlarm ? "bg-[#1DB954]/20 text-[#1DB954]" : "bg-white/5 text-white/40"}`}>
               <div className={`w-2 h-2 rounded-full ${hasActiveAlarm ? "bg-[#1DB954]" : "bg-white/20"}`}></div>
               <span className="text-sm font-medium">{hasActiveAlarm ? "Actif" : "Inactif"}</span>
             </div>
-            
+
             {/* Spotify connect button */}
             <button
               onClick={() => setShowSpotifyConnect(!showSpotifyConnect)}
@@ -283,7 +319,7 @@ export default function App() {
         {showSpotifyConnect && !isSpotifyAuthenticated && (
           <div className="glass-panel rounded-3xl p-8 mb-8">
             <h3 className="text-xl font-semibold mb-4">Connecter Spotify</h3>
-            
+
             {!showClientIdInput && !showCodeInput ? (
               <>
                 <p className="text-white/40 mb-6">
@@ -305,9 +341,9 @@ export default function App() {
                 <ol className="list-decimal list-inside text-white/60 space-y-2 mb-6 text-sm">
                   <li>
                     Allez sur{" "}
-                    <a 
-                      href="https://developer.spotify.com/dashboard" 
-                      target="_blank" 
+                    <a
+                      href="https://developer.spotify.com/dashboard"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#1DB954] hover:underline"
                     >
@@ -398,7 +434,7 @@ export default function App() {
                 className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-3xl text-white outline-none focus:border-[#1DB954] transition-colors w-full"
               />
             </div>
-            
+
             {isSpotifyAuthenticated && playlists.length > 0 && (
               <div className="flex-1">
                 <label className="text-white/40 text-sm mb-2 block">Playlist (optionnel)</label>
@@ -417,9 +453,10 @@ export default function App() {
                 </select>
               </div>
             )}
-            
+
             <button
               onClick={handleSetAlarm}
+              aria-label="Ajouter l'alarme"
               className="h-[72px] w-[72px] rounded-2xl bg-[#1DB954] hover:bg-[#1ed760] text-black flex items-center justify-center transition-all hover:scale-105 shadow-lg"
             >
               <Plus size={32} />
@@ -444,12 +481,14 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => handleToggle(alarm.id)}
+                  aria-label={alarm.active ? "Désactiver l'alarme" : "Activer l'alarme"}
                   className={`p-3 rounded-xl transition-colors ${alarm.active ? "bg-[#1DB954]/20 text-[#1DB954]" : "bg-white/5 text-white/30"}`}
                 >
                   <Power size={20} />
                 </button>
                 <button
                   onClick={() => handleDelete(alarm.id)}
+                  aria-label="Supprimer l'alarme"
                   className="p-3 rounded-xl bg-white/5 text-red-400/60 hover:text-red-400 hover:bg-red-400/10 transition-colors"
                 >
                   <Trash2 size={20} />

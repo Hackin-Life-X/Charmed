@@ -22,6 +22,18 @@ pub struct AlarmEntry {
     pub playlist_uri: String,
     pub volume: u8,             // 0-100
     pub active: bool,
+
+// -- STRUCTURES DE DONNÉES --
+
+/// Représente une alarme programmée
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AlarmEntry {
+    pub id: String,
+    pub time: String,           // Format "HH:MM"
+    pub playlist_name: String,
+    pub playlist_uri: String,
+    pub volume: u8,             // 0-100
+    pub active: bool,
     pub days: Vec<String>,      // ["Monday", "Tuesday", ...]
     pub fade_in: bool,
     pub fade_in_duration: u16,  // Secondes
@@ -30,6 +42,7 @@ pub struct AlarmEntry {
 /// État global de l'application partagé entre tous les appels IPC
 pub struct AppState {
     pub alarms: Mutex<Vec<AlarmEntry>>,
+    pub config: Mutex<storage::AppConfig>,
     pub spotify_client: Mutex<Option<spotify::SpotifyClient>>,
 }
 
@@ -167,10 +180,18 @@ fn check_alarms(state: State<'_, AppState>) -> Result<Option<AlarmEntry>, String
 /// Initie l'authentification Spotify OAuth
 #[tauri::command]
 async fn spotify_login(
+    app_handle: tauri::AppHandle,
     state: State<'_, AppState>,
     client_id: String,
     client_secret: String,
 ) -> Result<String, String> {
+    // Sauvegarder le client_id dans la config
+    if let Ok(app_data_dir) = app_handle.path().app_data_dir() {
+        let mut config = state.config.lock().map_err(|e| e.to_string())?;
+        config.spotify_client_id = Some(client_id.clone());
+        let _ = storage::save_config(&app_data_dir, &config);
+    }
+
     let mut client = spotify::SpotifyClient::new(client_id, client_secret);
     let auth_url = client.get_auth_url();
     
@@ -178,6 +199,31 @@ async fn spotify_login(
     *spotify_guard = Some(client);
     
     Ok(auth_url)
+}
+
+/// Récupère la configuration actuelle
+#[tauri::command]
+fn get_config(state: State<'_, AppState>) -> Result<storage::AppConfig, String> {
+    let config = state.config.lock().map_err(|e| e.to_string())?;
+    Ok(config.clone())
+}
+
+/// Met à jour la configuration
+#[tauri::command]
+fn update_config(
+    app_handle: tauri::AppHandle,
+    state: State<'_, AppState>,
+    config: storage::AppConfig,
+) -> Result<(), String> {
+    let mut current_config = state.config.lock().map_err(|e| e.to_string())?;
+    *current_config = config;
+    
+    if let Ok(app_data_dir) = app_handle.path().app_data_dir() {
+        storage::save_config(&app_data_dir, &current_config)
+            .map_err(|e| format!("Erreur sauvegarde config: {}", e))?;
+    }
+    
+    Ok(())
 }
 
 /// Complete l'authentification avec le code callback
@@ -300,19 +346,28 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {
+            let app_data_dir = app.path().app_data_dir().expect("Failed to get app data directory");
+            
             // Charger les alarmes sauvegardees
-            if let Ok(app_data_dir) = app.path().app_data_dir() {
-                if let Ok(alarms) = storage::load_alarms(&app_data_dir) {
-                    let state = app.state::<AppState>();
-                    if let Ok(mut stored_alarms) = state.alarms.lock() {
-                        *stored_alarms = alarms;
-                    };
+            if let Ok(alarms) = storage::load_alarms(&app_data_dir) {
+                let state = app.state::<AppState>();
+                if let Ok(mut stored_alarms) = state.alarms.lock() {
+                    *stored_alarms = alarms;
+                };
+            }
+
+            // Charger la configuration
+            if let Ok(config) = storage::load_config(&app_data_dir) {
+                let state = app.state::<AppState>();
+                if let Ok(mut stored_config) = state.config.lock() {
+                    *stored_config = config;
                 }
             }
             Ok(())
         })
         .manage(AppState {
             alarms: Mutex::new(Vec::new()),
+            config: Mutex::new(storage::AppConfig::default()),
             spotify_client: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
@@ -330,6 +385,8 @@ pub fn run() {
             is_spotify_authenticated,
             play_local_alarm,
             stop_local_alarm,
+            get_config,
+            update_config,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

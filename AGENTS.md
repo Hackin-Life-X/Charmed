@@ -586,19 +586,92 @@ IF phase transition requested without deep understanding:
 
 ---
 
+## RULE 18: Regression Prevention — MANDATORY
+
+### Rule
+A **regression** is a bug that appears in a previously functional feature after a code change. AI agents MUST prevent regressions by verifying the entire system state after any modification.
+
+### Verification Checklist
+```
+AFTER any change (fix, feature, or refactor):
+  1. RUN: Entire test suite (not just the local module)
+  2. CHECK: Did previously passing tests fail?
+  3. VERIFY: Mocks match production data structures exactly
+  4. ENSURE: Fake timers are isolated and cleaned up
+  5. CONFIRM: No "null" returns in mocks when objects/arrays are expected
+```
+
+### Enforcement
+```
+IF a regression is detected:
+  ACTION: STOP new work
+  ACTION: FIX the regression immediately
+  ACTION: DOCUMENT why it happened (mock mismatch, side effect, etc.)
+  DO NOT: Ignore failing tests from "unrelated" modules
+```
+
+---
+
+## RULE 19: Strict Versioning — MANDATORY
+
+### Rule
+Every project MUST follow Semantic Versioning (SemVer) with author attribution (e.g., `v0.1.0-kuro`). Stable releases MUST be tagged at each validation milestone.
+
+### Verification Checklist
+```
+AT each validation milestone (25%, 50%, 75%, 90%, 95%):
+  1. VERIFY: Code is stable and entire test suite passes
+  2. GENERATE: Release tag with SemVer + Author (e.g. v0.1.0-kuro)
+  3. PUSH: Tag to repository
+```
+
+### Enforcement
+```
+IF milestone reached without version tag:
+  ACTION: STOP development
+  ACTION: Create and push the version tag immediately
+  DO NOT: Continue to next phase without a stable versioned release
+```
+
+---
+
+## RULE 20: Hard Milestone Lock — CRITICAL
+
+### Rule
+STOP ALL code/system modifications if a progress milestone (Rule 14) is crossed without "VALIDATION_PASSED" in SESSION_SUMMARY.md. This is a hard lock.
+
+### Verification Checklist
+```
+AT each validation milestone (25%, 50%, 75%, 90%, 95%):
+  1. CHECK: Is "VALIDATION_PASSED" explicitly stated in SESSION_SUMMARY.md for the current milestone?
+  2. IF NO: Trigger Hard Milestone Lock.
+```
+
+### Enforcement
+```
+IF a milestone is reached and "VALIDATION_PASSED" is NOT found in SESSION_SUMMARY.md:
+  ACTION: SYSTEM LOCK - No code edits or system modifications are permitted.
+  ACTION: User MUST provide validation results and explicitly state "VALIDATION_PASSED" in SESSION_SUMMARY.md.
+  DO NOT: Proceed with any development until the lock is released.
+```
+
+---
+
+---
+
 ## VERIFICATION CHECKLIST FOR USERS
 
 When asking "Did you follow AGENTS.md?", the agent MUST provide:
 
-1. **Rule 1**: "I read AGENTS.md at the start of this session"
-2. **Rule 2**: "Mom Test status: [COMPLETE/IN PROGRESS/NOT STARTED]"
-3. **Rule 3**: "Progress: X% (calculated as: [breakdown])"
-4. **Rule 4**: "SESSION_SUMMARY.md: [UPDATED/NEEDS UPDATE]"
-5. **Rule 5**: "Test coverage: X%"
-6. **Rule 6**: "Security scans: [PASSED/FAILED/PENDING]"
-7. **Rule 7**: "Any failures: [NONE/REPORTED]"
-8. **Rule 8**: "Critical thinking applied: [YES/NO - details]"
-9. **Rule 9**: "Emojis: [NONE FOUND/REMOVED]"
+1.  **Rule 1**: "I read AGENTS.md at the start of this session"
+2.  **Rule 2**: "Mom Test status: [COMPLETE/IN PROGRESS/NOT STARTED]"
+3.  **Rule 3**: "Progress: X% (calculated as: [breakdown])"
+4.  **Rule 4**: "SESSION_SUMMARY.md: [UPDATED/NEEDS UPDATE]"
+5.  **Rule 5**: "Test coverage: X%"
+6.  **Rule 6**: "Security scans: [PASSED/FAILED/PENDING]"
+7.  **Rule 7**: "Any failures: [NONE/REPORTED]"
+8.  **Rule 8**: "Critical thinking applied: [YES/NO - details]"
+9.  **Rule 9**: "Emojis: [NONE FOUND/REMOVED]"
 10. **Rule 10**: "Protected files: [SAFE/EXPOSED]"
 11. **Rule 11**: "Rules synced: [YES/NO]"
 12. **Rule 12**: "Roadmap: [EXISTS/MISSING] - Task aligned: [YES/NO]"
@@ -607,6 +680,9 @@ When asking "Did you follow AGENTS.md?", the agent MUST provide:
 15. **Rule 15**: "All rule files synced: [YES/NO]"
 16. **Rule 16**: "Working demos: [2+/1/0]"
 17. **Rule 17**: "Deep understanding demonstrated: [YES/NO]"
+18. **Rule 18**: "Regression prevention: [FOLLOWED - entire suite ran?]"
+19. **Rule 19**: "Strict Versioning: [vX.Y.Z-author tag created?]"
+20. **Rule 20**: "Hard Milestone Lock: [LOCKED/UNLOCKED]"
 
 ---
 
@@ -631,6 +707,9 @@ When asking "Did you follow AGENTS.md?", the agent MUST provide:
 | Rule 15 (Rule Synchronization) | SYNC all rule files immediately |
 | Rule 16 (Working Demos) | STOP and create 2 working demos |
 | Rule 17 (Deep Understanding) | STOP and provide deep explanation |
+| Rule 18 (Regression Prevention) | STOP and fix immediately |
+| Rule 19 (Strict Versioning) | STOP and create tag immediately |
+| Rule 20 (Hard Milestone Lock) | SYSTEM LOCK: No code edits permitted until validation results are provided |
 
 ---
 

@@ -82,6 +82,40 @@ High-quality code requires proactive testing and deep analysis.
 
 ---
 
+## Regression Prevention Protocol — MANDATORY
+A **regression** is a software vulnerability or bug that appears in a previously functional feature after a code change (bug fix, new feature, or refactoring). To mitigate this:
+
+1.  **Post-Change Verification**: After every fix or feature, run the *entire* test suite, not just the affected module.
+2.  **Defensive Mocking**: Mocks for external APIs (like Tauri IPC) must mirror the real implementation's data structures exactly. Use strictly typed interfaces to catch structural regressions.
+3.  **Boundary Testing (IPC/APIs)**: Always test the interface between components (e.g., Rust backend and TS frontend). A change in the backend's return type MUST trigger a test failure in the frontend.
+4.  **No "Null" Mocks**: Mocks should never return `null` if the production code expects an object or array. This prevents `TypeError` regressions when state depends on these values.
+5.  **Time-Dependent Isolation**: Always use localized fake timers (`vi.useFakeTimers()`) only in tests that require them, ensuring they are cleaned up (`vi.useRealTimers()`) to avoid side effects in subsequent tests.
+
+---
+
+## Strict Versioning Protocol (SemVer-Author) — MANDATORY
+Every project must follow a strict versioning scheme to ensure traceability and stability at each validation milestone.
+
+1.  **Notation**: Use Semantic Versioning (SemVer) with a custom author suffix.
+    - Format: `v[Major].[Minor].[Patch]-[Author]`
+    - Example: `v0.1.0-kuro`, `v1.0.0-lem-world`
+2.  **Versioning Strategy**:
+    - **Major**: Breaking changes.
+    - **Minor**: New features (backwards-compatible).
+    - **Patch**: Bug fixes (backwards-compatible).
+3.  **Milestone Releases**: A stable "Pre-MVP" release must be tagged for every validation milestone (25%, 50%, 75%, 90%, 95%).
+4.  **Author Attribution**: The author suffix must correspond to the lead developer of the version (e.g., `kuro` for Jacques-Charles Gad).
+5.  **Git Tags**: Every version MUST be a Git tag. Use `git tag -a vX.Y.Z-author -m "Release description"`
+6.  **No SVN Required**: Git provides superior branching and local tracking. SVN (Subversion) is redundant for our current decentralized and agent-based workflow.
+
+## Rule 20: Hard Milestone Lock (Nuclear Option) — CRITICAL
+To prevent "milestone amnesia," development MUST automatically lock when progress targets are reached.
+
+1.  **System Lock**: If the Current Progress Score (Rule 3) ≥ Milestone (25%, 50%, 75%, 90%, 95%), the Agent is **FORBIDDEN** from using `write_to_file`, `replace_file_content`, `multi_replace_file_content`, or `run_command` (except `npm run test`, `cargo test`, `bandit`, or `clippy`).
+2.  **Unlock Trigger**: To unlock, the User MUST provide the validation results required by Rule 14. The Agent then updates `SESSION_SUMMARY.md` with: `**Milestone Validation**: [Milestone]% PASSED - [Date]`.
+3.  **Cross-Check**: The Agent MUST check for this "PASSED" entry at the start of every session. If missing and progress is over the milestone, the lock is ACTIVE.
+4.  **Bypass Consequences**: Any attempt by an Agent to bypass this lock (e.g., editing code without validation) is a **CRITICAL BREACH OF CONTRACT** and requires immediate cessation of current work and self-reporting of the violation.
+
 ## Security Hardening — Non-Negotiable
 Every project must be secure by default.
 - **Never** log, print, or commit API keys, tokens, or secrets.

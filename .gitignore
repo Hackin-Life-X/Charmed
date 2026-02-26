@@ -53,3 +53,7 @@ coverage/
 # Tauri build artifacts
 charmed-tauri/src-tauri/WixTools/
 charmed-tauri/src-tauri/target/
+
+# OpenMemory - IDE/Assistant specific rules
+.github\instructions\openmemory.instructions.md
+AGENTS.md
