@@ -683,6 +683,33 @@ IF milestone reached without Intelligence Report:
 
 ---
 
+---
+
+## RULE 22: Feature Focus Rule — MANDATORY
+
+### Rule
+Development MUST focus on only ONE specific feature for each periodic validation cycle (25%, 50%, 75%, 90%, 95%). This focus on depth over breadth continues even after the MVP phase.
+
+### Verification Checklist
+```
+AT each milestone:
+  1. IDENTIFY: Which single feature is the focus of this validation cycle?
+  2. VERIFY: Has this feature been implemented with maximum depth and robustness?
+  3. CHECK: Are all other feature developments currently paused?
+  4. CONFIRM: Is this rule being applied post-MVP?
+```
+
+### Enforcement
+```
+IF validation involves multiple shallow features or lacks a single focus:
+  ACTION: STOP development
+  ACTION: Re-focus on a single primary feature for this cycle
+  ACTION: Ensure implementation depth meets standards before proceeding
+  DO NOT: Sacrifice depth for breadth during validation
+```
+
+---
+
 ## VERIFICATION CHECKLIST FOR USERS
 
 When asking "Did you follow AGENTS.md?", the agent MUST provide:
