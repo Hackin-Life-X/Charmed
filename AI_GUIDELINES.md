@@ -116,6 +116,9 @@ To prevent "milestone amnesia," development MUST automatically lock when progres
 3.  **Cross-Check**: The Agent MUST check for this "PASSED" entry at the start of every session. If missing and progress is over the milestone, the lock is ACTIVE.
 4.  **Bypass Consequences**: Any attempt by an Agent to bypass this lock (e.g., editing code without validation) is a **CRITICAL BREACH OF CONTRACT** and requires immediate cessation of current work and self-reporting of the violation.
 
+## Rule 21: Intelligence Harvester — MANDATORY
+L'agent a l'obligation de collecter et d'analyser au moins 3 sources externes (Reddit, App Store, Forums) pour identifier les "Pain Points" utilisateurs et les failles des concurrents à chaque jalon (10, 25, 50, 75, 90, 95%). Cette analyse doit être consignée avant toute validation.
+
 ## Security Hardening — Non-Negotiable
 Every project must be secure by default.
 - **Never** log, print, or commit API keys, tokens, or secrets.
@@ -323,6 +326,18 @@ At progress milestones (25%, 50%, 75%, 90%, 95%), the product MUST be validated:
 | 95% | Pre-launch validation (all criteria met) |
 
 **Enforcement**: STOP development at each milestone until validation is complete.
+
+---
+
+## Feature Focus Rule (MANDATORY)
+
+To ensure the highest quality and depth of implementation, development MUST focus on only ONE specific feature for each periodic validation cycle.
+
+1.  **Single Feature Focus**: Each milestone validation (25%, 50%, 75%, 90%, 95%) must center on validating and polishing one primary feature.
+2.  **Breadth vs. Depth**: Avoid shallow implementation of multiple features. Prioritize deep, robust implementation of the selected feature.
+3.  **Post-MVP Continuity**: This rule remains active even after the MVP (Minimum Viable Product) phase to maintain long-term product standards.
+
+**Enforcement**: Development on other features is paused until the current target feature is fully validated.
 
 ---
 

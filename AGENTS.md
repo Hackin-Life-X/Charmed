@@ -659,6 +659,30 @@ IF a milestone is reached and "VALIDATION_PASSED" is NOT found in SESSION_SUMMAR
 
 ---
 
+## RULE 21: Intelligence Harvester — MANDATORY
+
+### Rule
+The agent MUST perform external market intelligence research at every milestone (10%, 25%, 50%, 75%, 90%, 95%). This involves searching at least 3 distinct sources (Reddit, App Store, specialized forums, etc.) to identify user pain points, competitor weaknesses, and market gaps.
+
+### Verification Checklist
+```
+AT each milestone:
+  1. SEARCH: At least 3 external sources for the project domain
+  2. ANALYZE: Identify 2+ major user complaints about competitors
+  3. SYNTHESIZE: Document how the current project addresses these "pain points"
+  4. RECORD: Add the "Intelligence Report" to the milestone validation documentation
+```
+
+### Enforcement
+```
+IF milestone reached without Intelligence Report:
+  ACTION: STOP development
+  ACTION: Conduct and document the intelligence research immediately
+  DO NOT: Continue implementation until market gaps are documented
+```
+
+---
+
 ## VERIFICATION CHECKLIST FOR USERS
 
 When asking "Did you follow AGENTS.md?", the agent MUST provide:
@@ -683,6 +707,8 @@ When asking "Did you follow AGENTS.md?", the agent MUST provide:
 18. **Rule 18**: "Regression prevention: [FOLLOWED - entire suite ran?]"
 19. **Rule 19**: "Strict Versioning: [vX.Y.Z-author tag created?]"
 20. **Rule 20**: "Hard Milestone Lock: [LOCKED/UNLOCKED]"
+21. **Rule 21**: "Intelligence Harvester: At least 3 sources analyzed for the current milestone? [YES/NO]"
+22. **Rule 22**: "Feature Focus Rule: Only one feature focused on for this validation cycle? [YES/NO]"
 
 ---
 
@@ -710,6 +736,8 @@ When asking "Did you follow AGENTS.md?", the agent MUST provide:
 | Rule 18 (Regression Prevention) | STOP and fix immediately |
 | Rule 19 (Strict Versioning) | STOP and create tag immediately |
 | Rule 20 (Hard Milestone Lock) | SYSTEM LOCK: No code edits permitted until validation results are provided |
+| Rule 21 (Intel Harvester) | STOP and conduct intelligence research immediately |
+| Rule 22 (Feature Focus) | STOP and re-focus on a single feature |
 
 ---
 

@@ -45,6 +45,43 @@
 
 ---
 
+# Session Summary — 2026-02-27 (Feature Focus Rule)
+**Editor**: Antigravity
+
+## Français
+**Ce qui a été fait** :
+- **Nouvelle règle IA "Feature Focus"** : Création d'une règle obligeant à se concentrer sur une seule fonctionnalité par cycle de validation périodique.
+- **Continuité Post-MVP** : La règle précise qu'elle reste active même après la phase MVP pour maintenir la qualité.
+- **Synchronisation Globale** : La règle a été injectée et synchronisée sur tous les fichiers de contrôle : `AI_GUIDELINES.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md` et `GAD.md`.
+- **Mise à jour AGENTS.md** : Ajout de la règle 22, mise à jour de la checklist de vérification et du résumé des sanctions.
+
+**Fichiers modifiés** :
+- `AI_GUIDELINES.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md`, `GAD.md`
+- `SESSION_SUMMARY.md`
+
+**Étapes suivantes** :
+- Appliquer cette règle lors du prochain jalon de validation.
+
+## English
+**What was done**:
+- **New "Feature Focus" AI Rule**: Created a rule mandating focus on a single feature per periodic validation cycle.
+- **Post-MVP Continuity**: The rule explicitly stays active after the MVP phase to ensure long-term implementation depth.
+- **Global Synchronization**: Synchronized the rule across all control files: `AI_GUIDELINES.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md`, and `GAD.md`.
+- **AGENTS.md Update**: Integrated Rule 22 into the contract, verification checklist, and enforcement summary.
+
+**Files changed**:
+- `AI_GUIDELINES.md`, `AGENTS.md`, `.cursorrules`, `copilot-instructions.md`, `GAD.md`
+- `SESSION_SUMMARY.md`
+
+**Next steps**:
+- Apply the single-feature focus during the next validation milestone.
+
+**Tests**: N/A (Rules update)
+**Blockers**: None
+**Progress**: 60% (Rules updated and synchronized, implementation methodology refined)
+
+---
+
 # Session Summary — 2026-02-26
 **Editor**: Antigravity
 
